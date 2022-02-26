@@ -1,84 +1,85 @@
-import React, { useState } from 'react';
-import { Form, Grid, Button } from 'semantic-ui-react';
+import React from 'react';
+import { Form, Grid, Button, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 
 export const RegisterScreen = () => {
-    const errors = [];
+    const schema = yup.object({
+        username: yup.string().required().length(3),
+    }).required();
+
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: {
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: ''
+        },
+        resolver: yupResolver(schema)
+    });
+
+
     const loading = false;
-    const [username, setUsername] = useState('');
-    const [email, setemail] = useState('');
-    const [password, setpassword] = useState('');
-    const [confirmPassword, setconfirmPassword] = useState('');
-
-    const onChangeUserName = (usernameText) => {
-        setUsername(usernameText.target.value);
-    }
-
-    const onChangeEmail = (emailText) => {
-        setemail(emailText.target.value)
-        console.log(username);
-    }
-
-    const onChangePassword = (passwordText) => {
-        setpassword(passwordText.target.value)
-    }
-
-    const onChangeConfirmPassword = (confirmPasswordText) => {
-        setconfirmPassword(confirmPasswordText.target.value)
-    }
-
-
-
     const registerUser = () => {
         { }
     }
 
     return (
         <div className='form-container ui form'>
-            <Form noValidate onSubmit={registerUser} className={loading ? 'loading' : ''}>
-                <Form.Input
-                    className="field"
-                    label="Username"
-                    placeholder="Username..."
-                    name="username"
-                    type="text"
-                    value={username}
-                    onChange={onChangeUserName}
-                >
-                </Form.Input>
+            <Form noValidate onSubmit={handleSubmit((data) => { console.log(data, 'data'); console.log(errors) })} className={loading ? 'loading' : ''}>
+                <Controller
+                    name='username'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <Form.Input
+                        label='Username'
+                        placeholder='username'
+                        {...field}
+                    >
+                    </Form.Input>}
+                />
+                {errors.username && <Label pointing>{errors.username.message}</Label>}
 
-                <Form.Input
-                    className="field"
-                    label="Email"
-                    placeholder="Email..."
-                    name="email"
-                    type="text"
-                    value={email}
-                    onChange={onChangeEmail}
-                >
-                </Form.Input>
+                <Controller
+                    name='email'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <Form.Input
+                        label='email'
+                        placeholder='email'
+                        {...field}
+                    >
+                    </Form.Input>}
+                />
 
-                <Form.Input
-                    className="field"
-                    label="Password"
-                    placeholder="Password..."
-                    name="password"
-                    type="password"
-                    value={password}
-                    onChange={onChangePassword}
-                >
-                </Form.Input>
+                <Controller
+                    name='password'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <Form.Input
+                        label='password'
+                        placeholder='password'
+                        type='password'
+                        {...field}
+                    >
+                    </Form.Input>}
+                />
 
-                <Form.Input
-                    className="field"
-                    label="Confirm Password"
-                    placeholder="Confirm Password..."
-                    name="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={onChangeConfirmPassword}
-                >
-                </Form.Input>
+                <Controller
+                    name='confirmPassword'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => <Form.Input
+                        type='password'
+                        label='confirmPassword'
+                        placeholder='confirmPassword'
+                        {...field}
+                    >
+                    </Form.Input>}
+                />
+
 
                 <Grid columns='equal'>
                     <Grid.Column>
@@ -91,18 +92,7 @@ export const RegisterScreen = () => {
                 </Grid>
 
             </Form>
-            {
-                Object.keys(errors).length > 0 && (
-                    <div className='ui negative message'>
-                        <ul className='list'>
-                            {Object.values(errors).map(errorValue => (
-                                <li key={errorValue}>{errorValue}</li>
-                            ))
-                            }
-                        </ul>
-                    </div>
-                )
-            }
+
         </div>
     )
 
