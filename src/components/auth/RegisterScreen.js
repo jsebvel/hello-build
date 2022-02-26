@@ -3,7 +3,7 @@ import { Form, Grid, Button, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { registerSchema } from '../../utils/schemas/registerSchema';
+import { registerSchema } from '../../utils/schemas/authSchema';
 
 
 export const RegisterScreen = () => {    
