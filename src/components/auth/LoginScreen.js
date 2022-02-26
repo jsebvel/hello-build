@@ -1,11 +1,27 @@
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import { Form, Grid, Button, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { loginSchema, registerSchema } from '../../utils/schemas/authSchema';
+import { useMutation } from '@apollo/react-hooks';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/auth';
+import gql from 'graphql-tag';
+
+
+import { loginSchema } from '../../utils/schemas/authSchema';
 
 export const LoginScreen = () => {
+  const context = useContext(AuthContext);
+  const history = useNavigate();
+  const [errorsGraph, setErrors] = useState({});
+
+  const loginU = (data) => {
+    loginUser({
+      variables: { email: data.email, password: data.password }
+    });
+  }
+
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: '',
@@ -14,12 +30,23 @@ export const LoginScreen = () => {
     resolver: yupResolver(loginSchema)
   });
 
-  const loading = false;
+
+  const [loginUser, { loading, error }] = useMutation(LOGIN_USER, {
+    update(_, { data: { login: userData } }) {
+      context.login(userData);
+      history('/')
+    },
+    onError(err) {
+      console.log(error);
+      const resultErrors = err.graphQLErrors[0].extensions.errors
+      setErrors(resultErrors);
+    }
+  });
 
   return (
     <div className='form-container ui form'>
       <h3>Login form</h3>
-      <Form noValidate onSubmit={handleSubmit((data) => { console.log(data, 'data'); console.log(errors) })} className={loading ? 'loading' : ''}>
+      <Form noValidate onSubmit={handleSubmit((data) => { loginU(data) })} className={loading ? 'loading' : ''}>
         <Controller
           name='email'
           control={control}
@@ -32,7 +59,6 @@ export const LoginScreen = () => {
           </Form.Input>}
         />
         {errors.email && <Label className='label-error' pointing>{errors.email.message}</Label>}
-
 
         <Controller
           name='password'
@@ -51,7 +77,7 @@ export const LoginScreen = () => {
 
         <Grid columns='equal'>
           <Grid.Column>
-            <Button basic color='teal'>Register</Button>
+            <Button basic color='teal'>Login!</Button>
           </Grid.Column>
           <Grid.Column className='link'>
             <Link to='/register'>Not register? Come register!</Link>
@@ -64,3 +90,15 @@ export const LoginScreen = () => {
     </div>
   )
 }
+
+const LOGIN_USER = gql`
+    mutation login($email: String!, $password: String!) {
+        login (email: $email, password: $password ) {
+            id
+            email
+            token
+            username
+            createdAt
+        }
+    }
+`;

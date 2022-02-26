@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Grid, Button, Label } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import { AuthContext } from '../../context/auth';
+import { useNavigate, Link } from 'react-router-dom';
 import { registerSchema } from '../../utils/schemas/authSchema';
 
 
-export const RegisterScreen = () => {    
+export const RegisterScreen = () => {
+    const context = useContext(AuthContext);
+    const history = useNavigate();
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -18,16 +23,30 @@ export const RegisterScreen = () => {
         resolver: yupResolver(registerSchema)
     });
 
+    const [errorsGraph, setErrors] = useState({});
 
-    const loading = false;
-    const registerUser = () => {
-        { }
+    const registerUser = (data) => {
+        addUser({
+            variables: { username: data.username, email: data.email, password: data.password, confirmPassword: data.confirmPassword }
+        });
     }
+
+    const [addUser, { loading }] = useMutation(REGISTER_USER, {
+        update(_, { data: { register: userData } }) {
+            context.login(userData);
+            history('/login')
+        },
+        onError(err) {
+            const resultErrors = err.graphQLErrors[0].extensions.errors
+            setErrors(resultErrors);
+        },
+    });
+
 
     return (
         <div className='form-container ui form'>
             <h3>Register form</h3>
-            <Form noValidate onSubmit={handleSubmit((data) => { console.log(data, 'data'); console.log(errors) })} className={loading ? 'loading' : ''}>
+            <Form noValidate onSubmit={handleSubmit((data) => { registerUser(data) })} className={loading ? 'loading' : ''}>
                 <Controller
                     name='username'
                     control={control}
@@ -101,3 +120,27 @@ export const RegisterScreen = () => {
     )
 
 }
+
+const REGISTER_USER = gql`
+    mutation register(
+        $username: String!
+        $email: String!
+        $password: String!
+        $confirmPassword: String!
+    ) {
+        register (
+            registerInput: {
+                username: $username
+                email: $email
+                password: $password
+                confirmPassword: $confirmPassword
+            }
+        ) {
+            id
+            email
+            token
+            username
+            createdAt
+        }
+    }
+`
