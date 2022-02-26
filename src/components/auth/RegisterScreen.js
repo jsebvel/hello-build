@@ -3,12 +3,10 @@ import { Form, Grid, Button, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import { registerSchema } from '../../utils/schemas/registerSchema';
 
-export const RegisterScreen = () => {
-    const schema = yup.object({
-        username: yup.string().required().length(3),
-    }).required();
+
+export const RegisterScreen = () => {    
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -17,7 +15,7 @@ export const RegisterScreen = () => {
             password: '',
             confirmPassword: ''
         },
-        resolver: yupResolver(schema)
+        resolver: yupResolver(registerSchema)
     });
 
 
@@ -28,6 +26,7 @@ export const RegisterScreen = () => {
 
     return (
         <div className='form-container ui form'>
+            <h3>Register form</h3>
             <Form noValidate onSubmit={handleSubmit((data) => { console.log(data, 'data'); console.log(errors) })} className={loading ? 'loading' : ''}>
                 <Controller
                     name='username'
@@ -40,7 +39,7 @@ export const RegisterScreen = () => {
                     >
                     </Form.Input>}
                 />
-                {errors.username && <Label pointing>{errors.username.message}</Label>}
+                {errors.username && <Label className='label-error' pointing>{errors.username.message}</Label>}
 
                 <Controller
                     name='email'
@@ -53,6 +52,8 @@ export const RegisterScreen = () => {
                     >
                     </Form.Input>}
                 />
+                {errors.email && <Label className='label-error' pointing>{errors.email.message}</Label>}
+
 
                 <Controller
                     name='password'
@@ -66,6 +67,8 @@ export const RegisterScreen = () => {
                     >
                     </Form.Input>}
                 />
+                {errors.password && <Label className='label-error' pointing>{errors.password.message}</Label>}
+
 
                 <Controller
                     name='confirmPassword'
@@ -79,6 +82,7 @@ export const RegisterScreen = () => {
                     >
                     </Form.Input>}
                 />
+                {errors.confirmPassword && <Label className='label-error' pointing>{errors.confirmPassword.message}</Label>}
 
 
                 <Grid columns='equal'>

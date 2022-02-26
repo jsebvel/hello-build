@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { HelloBuild } from './HelloBuild';
 import 'semantic-ui-css/semantic.min.css'
+import './styles/styles.scss';
+import './App.css';
 
 ReactDOM.render(
     <HelloBuild />,
