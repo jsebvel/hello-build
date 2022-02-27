@@ -17,6 +17,7 @@
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
     "node-sass": "^4.14.1",
+    "query-string": "^7.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.27.1",
@@ -39,6 +40,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "https://github.com/login/oauth",
   "browserslist": {
     "production": [
       ">0.2%",

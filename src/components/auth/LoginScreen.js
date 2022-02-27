@@ -34,7 +34,7 @@ export const LoginScreen = () => {
   const [loginUser, { loading, error }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData } }) {
       context.login(userData);
-      history('/')
+      window.location = `https://github.com/login/oauth/authorize?client_id=3dcf50b64c96f54858b7`;
     },
     onError(err) {
       console.log(error);
