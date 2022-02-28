@@ -9,13 +9,13 @@ export const GitRepos = () => {
     console.log(context);
 
     const getUserRepo = async () => {
-        if (context.gitToken.length > 0) {
+        if (localStorage.getItem('gitToken')) {
             const url = 'https://api.github.com/user/repos';
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     Accept: 'application/json',
-                    Authorization: `token ${context.gitToken}`
+                    Authorization: `token ${localStorage.getItem('gitToken')}`
                 },
             });
             const reposRes = await response.json();
@@ -29,12 +29,12 @@ export const GitRepos = () => {
     }, [])
     return (
         <div>
-            <h3>GitRepos</h3>
+            <h3>Here You can find your GitRepos</h3>
             {
                 repos && repos.length > 0
                     ? (repos.map(repo =>
                         <Grid.Column key={repo.id}>
-                            <SingleRepo repo={repo}/>
+                            <SingleRepo repo={repo} />
                         </Grid.Column>
                     ))
                     : <h1>Getting repos ...</h1>

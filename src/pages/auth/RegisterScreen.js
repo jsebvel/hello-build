@@ -7,9 +7,12 @@ import gql from 'graphql-tag';
 import { AuthContext } from '../../context/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerSchema } from '../../utils/schemas/authSchema';
-
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 export const RegisterScreen = () => {
+    const SwalM = withReactContent(Swal);
+
     const context = useContext(AuthContext);
     const history = useNavigate();
 
@@ -37,8 +40,11 @@ export const RegisterScreen = () => {
             history('/login')
         },
         onError(err) {
-            const resultErrors = err.graphQLErrors[0].extensions.errors
-            setErrors(resultErrors);
+            SwalM.fire({
+                title: 'Error',
+                text: err
+            });
+
         },
     });
 
@@ -109,7 +115,7 @@ export const RegisterScreen = () => {
                         <Button basic color='teal'>Register</Button>
                     </Grid.Column>
                     <Grid.Column className='link'>
-                        <Link to='/login'>Already register? Come Login!</Link>
+                        <Link to='/'>Already register? Come Login!</Link>
                     </Grid.Column>
 
                 </Grid>

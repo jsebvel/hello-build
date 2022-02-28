@@ -6,11 +6,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@apollo/react-hooks';
 import { AuthContext } from '../../context/auth';
 import gql from 'graphql-tag';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 
 import { loginSchema } from '../../utils/schemas/authSchema';
 
 export const LoginScreen = () => {
+  const SwalM = withReactContent(Swal);
   const context = useContext(AuthContext);
   const [errorsGraph, setErrors] = useState({});
 
@@ -36,9 +39,10 @@ export const LoginScreen = () => {
       window.location = `https://github.com/login/oauth/authorize?client_id=3dcf50b64c96f54858b7`;
     },
     onError(err) {
-      console.log(error);
-      const resultErrors = err.graphQLErrors[0].extensions.errors
-      setErrors(resultErrors);
+      SwalM.fire({
+        title: 'Error',
+        text: err
+      });
     }
   });
 
@@ -79,7 +83,7 @@ export const LoginScreen = () => {
             <Button basic color='teal'>Login!</Button>
           </Grid.Column>
           <Grid.Column className='link'>
-            <Link to='/register'>Not register? Come register!</Link>
+            <Link to='/auth/register'>Not register? Come register!</Link>
           </Grid.Column>
 
         </Grid>

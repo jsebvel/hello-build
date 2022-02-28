@@ -5,8 +5,7 @@ import './App.css';
 
 export const HelloBuild = () => {
     return (
-        <div>
-            <h3>Hello Build!!!</h3>
+        <div className='form-container'>
             <AuthProvider>
                 <AppRouter />
             </AuthProvider>

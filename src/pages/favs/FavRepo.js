@@ -3,13 +3,13 @@ import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { Grid, Transition } from 'semantic-ui-react';
 import { SingleRepo } from '../../components/SingleRepo';
+import { FETCH_REPOS_QUERY } from '../../utils/graphqlUtils';
 
 export const FavRepo = () => {
     const { loading, data } = useQuery(FETCH_REPOS_QUERY);
-    console.log(data);
     return (
         <div>
-            <h3>FavRepo</h3>
+            <h3>Here you can find your Favorites Repos</h3>
             {loading
                 ? (<h1>Loading posts</h1>)
                 : <Transition.Group>
@@ -26,19 +26,3 @@ export const FavRepo = () => {
         </div>
     )
 }
-
-const FETCH_REPOS_QUERY = gql`
-{
-    getFavRepos {
-    id
-     username
-     owner
-     fullName
-     name
-     url
-     gitUrl
-     liked
-     repoId 
-   }
-}
-` 

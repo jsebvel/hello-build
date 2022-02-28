@@ -4,8 +4,10 @@ import React, { useContext, useState } from 'react';
 import { Card, Grid } from 'semantic-ui-react'
 import gql from 'graphql-tag';
 import { AuthContext } from '../context/auth';
+import { FETCH_REPOS_QUERY } from '../utils/graphqlUtils';
 
 export const SingleRepo = ({ repo }) => {
+   
     const context = useContext(AuthContext);
     const username = localStorage.getItem('username');
     const [liked, setLike] = useState(false);
@@ -13,17 +15,20 @@ export const SingleRepo = ({ repo }) => {
         liked ? setLike(false) : setLike(true)
         likeRepo({
             variables: {
-                repoId: repo.id.toString(),
+                repoId: repo.size ? repo.id.toString() : repo.repoId,
                 username,
-                owner: repo.id ? repo.owner.login : repo.owner.login,
+                owner: repo.owner.login ? repo.owner.login : repo.owner,
                 fullName: repo.full_name ? repo.full_name : repo.fullName,
                 name: repo.name,
                 url: repo.url,
-                gitUrl: repo.git_url ? repo.git_url : repo.gitUrl ,
-                liked
+                gitUrl: repo.git_url ? repo.git_url : repo.gitUrl,
+                liked,
+                language: repo.language ? repo.language : ''
             }
         });
+       
     }
+
 
     const [likeRepo] = useMutation(LIKE_REPO_MUTATION)
 
@@ -38,6 +43,8 @@ export const SingleRepo = ({ repo }) => {
                     URL: {repo.url}
                     <br />
                     Git URL: {repo.git_url}
+                    <br />
+                    Language: {repo.language}
                 </Card.Description>
             </Card.Content>
             <Card.Content extra>
@@ -60,6 +67,7 @@ const LIKE_REPO_MUTATION = gql`
         $url: String!
         $gitUrl: String!
         $liked: Boolean!
+        $language: String!
     ) {
         createFavRepo(
             id: $id
@@ -71,6 +79,7 @@ const LIKE_REPO_MUTATION = gql`
             url: $url
             gitUrl: $gitUrl
             liked: $liked
+            language: $language
 
         ) {
             id
@@ -82,6 +91,7 @@ const LIKE_REPO_MUTATION = gql`
             gitUrl
             liked
             repoId
+            language
         }
     }
 `
