@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@apollo/react-hooks';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/auth';
 import gql from 'graphql-tag';
 
@@ -13,7 +12,6 @@ import { loginSchema } from '../../utils/schemas/authSchema';
 
 export const LoginScreen = () => {
   const context = useContext(AuthContext);
-  const history = useNavigate();
   const [errorsGraph, setErrors] = useState({});
 
   const loginU = (data) => {
@@ -34,6 +32,7 @@ export const LoginScreen = () => {
   const [loginUser, { loading, error }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData } }) {
       context.login(userData);
+      context.user = userData;
       window.location = `https://github.com/login/oauth/authorize?client_id=3dcf50b64c96f54858b7`;
     },
     onError(err) {

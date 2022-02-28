@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useState } from 'react';
 import jwtDecode from "jwt-decode";
 
 const initialState = {
@@ -8,19 +8,10 @@ const initialState = {
 export const AuthContext = createContext({
     user: null,
     login: (userData) => { },
-    logout: () => { }
+    logout: () => { },
+    gitToken: null,
+    gitHubLogin: (token) => { }
 });
-
-if (localStorage.getItem('jwtToken')) {
-    const userToken = localStorage.getItem('jwtToken');
-    const decodeToken = jwtDecode(userToken);
-    if (decodeToken.exp * 1000 < Date.now()) {
-        localStorage.removeItem('jwtToken')
-    } else {
-        initialState.user = decodeToken;
-    }
-}
-
 
 const authReducer = (state, action) => {
     switch (action.type) {
@@ -40,13 +31,22 @@ const authReducer = (state, action) => {
 
 export const AuthProvider = (props) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
+    const [gitToken, setGitToken] = useState('');
 
     const login = (userData) => {
         localStorage.setItem('jwtToken', userData.token);
+        localStorage.setItem('username', userData.username);
         dispatch({
             type: 'LOGIN',
             payload: userData
         });
+    }
+
+    const gitHubLogin = (token) => {
+        if (token) {
+            localStorage.setItem('gitToken', token);
+            setGitToken(token);
+        }
     }
 
     const logout = () => {
@@ -56,11 +56,11 @@ export const AuthProvider = (props) => {
 
     return (
         <AuthContext.Provider
-            value={{ user: state, login, logout }}
+            value={{ user: state, login, logout, gitToken, gitHubLogin }}
             {...props}
         ></AuthContext.Provider>
 
-    
+
 
     )
 }
