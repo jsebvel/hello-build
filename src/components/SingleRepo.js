@@ -26,6 +26,7 @@ export const SingleRepo = ({ repo }) => {
                 language: repo.language ? repo.language : ''
             }
         });
+        window.location.reload();
        
     }
 
